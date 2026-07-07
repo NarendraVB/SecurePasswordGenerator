@@ -1,5 +1,6 @@
 import string
 import secrets
+import math
 def validate_input(length, use_upper, use_lower, use_digits, use_symbols):
     selected_sets = (
     use_upper +
@@ -58,3 +59,19 @@ def generate_password(length, use_upper, use_lower, use_digits, use_symbols):
         password_chars.append(secrets.choice(pool))
     secrets.SystemRandom().shuffle(password_chars)
     return ''.join(password_chars)
+
+
+def calculate_entropy(length, use_upper, use_lower, use_digits, use_symbols):
+    pool_size = 0
+    if use_upper:
+        pool_size += len(UPPERCASE)
+    if use_lower:
+        pool_size += len(LOWERCASE)
+    if use_digits:
+        pool_size += len(DIGITS)
+    if use_symbols:
+        pool_size += len(SYMBOLS)
+    if pool_size == 0:
+        raise ValueError("At least one character type must be selected to calculate entropy.")
+    entropy = length * math.log2(pool_size)
+    return entropy
