@@ -1,4 +1,5 @@
 import string
+import secrets
 def validate_input(length, use_upper, use_lower, use_digits, use_symbols):
     selected_sets = (
     use_upper +
@@ -36,3 +37,24 @@ def build_character_pool(use_upper, use_lower, use_digits, use_symbols):
     if use_symbols:
         pool.append(SYMBOLS)
     return pool
+
+def generate_password(length, use_upper, use_lower, use_digits, use_symbols):
+    validate_input(length, use_upper, use_lower, use_digits, use_symbols)
+    pool = build_character_pool(
+        use_upper, 
+        use_lower, 
+        use_digits, 
+        use_symbols)
+    password_chars = []
+    if use_upper:
+        password_chars.append(secrets.choice(UPPERCASE))
+    if use_lower:
+        password_chars.append(secrets.choice(LOWERCASE))    
+    if use_digits:
+        password_chars.append(secrets.choice(DIGITS))
+    if use_symbols:
+        password_chars.append(secrets.choice(SYMBOLS))
+    while len(password_chars) < length:
+        password_chars.append(secrets.choice(pool))
+    secrets.SystemRandom().shuffle(password_chars)
+    return ''.join(password_chars)
