@@ -75,3 +75,16 @@ def calculate_entropy(length, use_upper, use_lower, use_digits, use_symbols):
         raise ValueError("At least one character type must be selected to calculate entropy.")
     entropy = length * math.log2(pool_size)
     return entropy
+
+def classify_strength(entropy):
+    WEAK_THRESHOLD = 40
+    MODERATE_THRESHOLD = 60
+    STRONG_THRESHOLD = 80
+    if entropy < WEAK_THRESHOLD:
+        return "Weak"
+    elif entropy < MODERATE_THRESHOLD:
+        return "Moderate"
+    elif entropy < STRONG_THRESHOLD:
+        return "Strong"
+    else:
+        return "Very Strong"
