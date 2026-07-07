@@ -1,102 +1,42 @@
-import string
-import secrets
+import math
+from src.generator import UPPERCASE, LOWERCASE, DIGITS, SYMBOLS
 
-MIN_PASSWORD_LENGTH = 4
-MAX_PASSWORD_LENGTH = 128
-
-UPPERCASE = string.ascii_uppercase
-LOWERCASE = string.ascii_lowercase
-DIGITS = string.digits
-SYMBOLS = string.punctuation
+WEAK_THRESHOLD = 40
+MODERATE_THRESHOLD = 60
+STRONG_THRESHOLD = 80
 
 
-class Generator:
+def calculate_entropy(length, use_upper, use_lower, use_digits, use_symbols):
 
-    @staticmethod
-    def validate_input(length, use_upper, use_lower, use_digits, use_symbols):
+    pool_size = 0
 
-        if not isinstance(length, int):
-            raise ValueError("Password length must be an integer.")
+    if use_upper:
+        pool_size += len(UPPERCASE)
 
-        selected_sets = (
-            use_upper
-            + use_lower
-            + use_digits
-            + use_symbols
-        )
+    if use_lower:
+        pool_size += len(LOWERCASE)
 
-        if selected_sets == 0:
-            raise ValueError("At least one character type must be selected.")
+    if use_digits:
+        pool_size += len(DIGITS)
 
-        if length < MIN_PASSWORD_LENGTH:
-            raise ValueError(
-                f"Password length must be at least {MIN_PASSWORD_LENGTH} characters."
-            )
+    if use_symbols:
+        pool_size += len(SYMBOLS)
 
-        if length > MAX_PASSWORD_LENGTH:
-            raise ValueError(
-                f"Password length must not exceed {MAX_PASSWORD_LENGTH} characters."
-            )
+    if pool_size == 0:
+        raise ValueError("Character pool cannot be empty.")
 
-        if length < selected_sets:
-            raise ValueError(
-                "Password length must be greater than or equal to the number of selected character types."
-            )
+    return length * math.log2(pool_size)
 
-    @staticmethod
-    def build_character_pool(use_upper, use_lower, use_digits, use_symbols):
 
-        pool = ""
+def classify_strength(entropy):
 
-        if use_upper:
-            pool += UPPERCASE
+    if entropy < WEAK_THRESHOLD:
+        return "Weak"
 
-        if use_lower:
-            pool += LOWERCASE
+    elif entropy < MODERATE_THRESHOLD:
+        return "Moderate"
 
-        if use_digits:
-            pool += DIGITS
+    elif entropy < STRONG_THRESHOLD:
+        return "Strong"
 
-        if use_symbols:
-            pool += SYMBOLS
-
-        return pool
-
-    @staticmethod
-    def generate_password(length, use_upper, use_lower, use_digits, use_symbols):
-
-        Generator.validate_input(
-            length,
-            use_upper,
-            use_lower,
-            use_digits,
-            use_symbols,
-        )
-
-        pool = Generator.build_character_pool(
-            use_upper,
-            use_lower,
-            use_digits,
-            use_symbols,
-        )
-
-        password_chars = []
-
-        if use_upper:
-            password_chars.append(secrets.choice(UPPERCASE))
-
-        if use_lower:
-            password_chars.append(secrets.choice(LOWERCASE))
-
-        if use_digits:
-            password_chars.append(secrets.choice(DIGITS))
-
-        if use_symbols:
-            password_chars.append(secrets.choice(SYMBOLS))
-
-        while len(password_chars) < length:
-            password_chars.append(secrets.choice(pool))
-
-        secrets.SystemRandom().shuffle(password_chars)
-
-        return "".join(password_chars)
+    return "Very Strong"

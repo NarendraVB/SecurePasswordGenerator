@@ -1,6 +1,6 @@
-from generator import Generator
-from entropy import calculate_entropy, classify_strength
-from cli import get_user_input
+from src.generator import Generator
+from src.entropy import calculate_entropy, classify_strength
+from src.cli import get_user_input
 
 
 def main():
